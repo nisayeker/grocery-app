@@ -1,41 +1,37 @@
 import { AppShell, Avatar, Flex, Group, Header, Menu } from "@mantine/core"
-import { IconLogout } from "@tabler/icons-react"
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react"
-import { FC, PropsWithChildren } from "react"
+import { IconLogout } from "@tabler/icons-react"
+import { useRouter } from "next/router"
+import { PropsWithChildren } from "react"
 
-const AppLayout: FC<PropsWithChildren> = ({ children }) => {
-  const supabase = useSupabaseClient()
+const DashboardLayout = ({ children }: PropsWithChildren) => {
   const user = useUser()
-
-  const handleLogout =  async () => {
+  const supabase = useSupabaseClient()
+  const router = useRouter()
+  const handleSignout = async () => {
     const error = await supabase.auth.signOut()
+    router.replace("/")
   }
+
   return (
     <AppShell
-      fixed
       header={
-        <Header height={60}>
-          <Flex
-            direction="row"
-            align="center"
-            justify="space-between"
-            h="100%"
-            px="20px"
-          >
+        <Header height={56}>
+          <Flex h="100%" direction="row" align="center" justify="center">
             <Group></Group>
             <Group></Group>
-            <Group align="center">
-              <Menu position="bottom-end" width={180}>
+            <Group>
+              <Menu width={180} position="bottom-end">
                 <Menu.Target>
                   <Avatar
                     radius={100}
-                    src={user?.user_metadata?.avatar_url ?? ""}
+                    src={user?.user_metadata?.avatar_url}
                     alt=""
                   />
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Menu.Item onClick={handleLogout} icon={<IconLogout />}>
-                    Logout
+                  <Menu.Item onClick={handleSignout}>
+                    <IconLogout /> Logout
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
@@ -49,4 +45,4 @@ const AppLayout: FC<PropsWithChildren> = ({ children }) => {
   )
 }
 
-export default AppLayout
+export default DashboardLayout

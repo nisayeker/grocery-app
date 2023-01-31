@@ -2,6 +2,9 @@ import AuthWrapper from "@/components/Wrapper/AuthWrapper"
 import Mantine from "@/components/Wrapper/Mantine"
 import "@/styles/globals.css"
 import { CustomAppProps } from "@/types/types"
+import { createGetInitialProps } from "@mantine/next"
+import { createStylesServer } from "@mantine/ssr"
+import { MantineProvider } from "@mantine/styles"
 import {
   createBrowserSupabaseClient,
   createServerSupabaseClient,
@@ -14,11 +17,11 @@ export default function App({ Component, pageProps }: CustomAppProps) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient())
 
   return (
-    <SessionContextProvider
-      supabaseClient={supabaseClient}
-      initialSession={pageProps.initialSession}
-    >
-      <Mantine>
+    <MantineProvider withCSSVariables withGlobalStyles withNormalizeCSS>
+      <SessionContextProvider
+        supabaseClient={supabaseClient}
+        initialSession={pageProps.initialSession}
+      >
         <AuthWrapper>
           {Component.Layout ? (
             <Component.Layout>
@@ -28,10 +31,12 @@ export default function App({ Component, pageProps }: CustomAppProps) {
             <Component {...pageProps} />
           )}
         </AuthWrapper>
-      </Mantine>
-    </SessionContextProvider>
+      </SessionContextProvider>
+    </MantineProvider>
   )
 }
+
+export const getInitialProps = createGetInitialProps()
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const supabase = createServerSupabaseClient(ctx)
