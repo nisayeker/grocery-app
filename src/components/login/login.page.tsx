@@ -70,7 +70,9 @@ const LoginPage = () => {
 
   const handleGoogle = async () => {
     try {
-      await supabase.auth.signInWithOAuth({ provider: "google" });
+      await supabase.auth.signInWithOAuth({ provider: "google", options: {
+        redirectTo: window.location.origin
+      } });
       navigate("/", { replace: true });
     } catch (error) {
       console.log(error);
