@@ -4,6 +4,8 @@ import {
   Flex,
   Group,
   LoadingOverlay,
+  MediaQuery,
+  Paper,
   TextInput,
 } from "@mantine/core";
 import { useState } from "react";
@@ -37,18 +39,38 @@ const SearchPage = () => {
     () => productSearchFetcher(searchTerm)
   );
 
-  const matches = useMediaQuery("(max-width: 700px)");
+  const isMobile = useMediaQuery("(max-width: 700px)");
 
   return (
     <>
-      <Box
-        py="sm"
+      <Paper radius={0} shadow="md">
+        {isMobile ? (
+          <>
+            <Group position="center" grow={isMobile}>
+              <TextInput
+                value={searchTerm}
+                variant="unstyled"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                icon={<Search size={18} />}
+                placeholder="Ürün Adı ile ara..."
+                miw={{ xs: 350, sm: 450, md: 500, lg: 600 }}
+              />
+            </Group>
+          </>
+        ) : (
+          <></>
+        )}
+      </Paper>
+
+      <Paper
+        radius={0}
+        py="md"
         sx={(theme) => ({
           backgroundColor: theme.colors.indigo[5],
         })}
       >
-        <Container>
-          <Group position="center" grow={matches}>
+        {/* <Container>
+          <Group position="center" grow={isMobile}>
             <TextInput
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -57,10 +79,10 @@ const SearchPage = () => {
               miw={{ xs: 350, sm: 450, md: 500, lg: 600 }}
             />
           </Group>
-        </Container>
-      </Box>
-      <Container mih="100%">
-        <Box mih="100%">
+        </Container> */}
+      </Paper>
+      <Container>
+        <Box mih="100%" py="md">
           {isLoading ? (
             <>
               <LoadingOverlay visible={true} />
