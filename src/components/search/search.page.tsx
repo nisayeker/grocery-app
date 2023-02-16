@@ -11,8 +11,9 @@ import {
 import { useState } from "react";
 import { Search } from "tabler-icons-react";
 import useSWR from "swr";
-import { useMediaQuery } from "@mantine/hooks";
+import { useFocusTrap, useFocusWithin, useMediaQuery } from "@mantine/hooks";
 import SearchList from "./search-list";
+import SearchHistory from "./search-history";
 
 const productSearchFetcher = (search: string) => {
   const options = {
@@ -33,6 +34,7 @@ const productSearchFetcher = (search: string) => {
 };
 
 const SearchPage = () => {
+  const { ref, focused } = useFocusWithin();
   const [searchTerm, setSearchTerm] = useState("");
   const { data, isLoading } = useSWR(
     searchTerm.length > 2 ? `product/${searchTerm}` : null,
@@ -41,56 +43,54 @@ const SearchPage = () => {
 
   const isMobile = useMediaQuery("(max-width: 700px)");
 
+  const SearchBar = (
+    <Group position="center" grow={isMobile}>
+      <TextInput
+        ref={ref}
+        value={searchTerm}
+        variant="unstyled"
+        onChange={(e) => setSearchTerm(e.target.value)}
+        icon={<Search size={18} />}
+        placeholder="Ürün Adı ile ara..."
+        miw={{ xs: 350, sm: 450, md: 500, lg: 600 }}
+      />
+    </Group>
+  );
+
   return (
     <>
       <Paper radius={0} shadow="md">
         {isMobile ? (
-          <>
-            <Group position="center" grow={isMobile}>
-              <TextInput
-                value={searchTerm}
-                variant="unstyled"
-                onChange={(e) => setSearchTerm(e.target.value)}
-                icon={<Search size={18} />}
-                placeholder="Ürün Adı ile ara..."
-                miw={{ xs: 350, sm: 450, md: 500, lg: 600 }}
-              />
-            </Group>
-          </>
+          <>{SearchBar}</>
         ) : (
-          <></>
+          <>
+            <Paper
+              radius={0}
+              py="md"
+              sx={(theme) => ({
+                backgroundColor: theme.colors.indigo[5],
+              })}
+            >
+              {SearchBar}
+            </Paper>
+          </>
         )}
       </Paper>
 
-      <Paper
-        radius={0}
-        py="md"
-        sx={(theme) => ({
-          backgroundColor: theme.colors.indigo[5],
-        })}
-      >
-        {/* <Container>
-          <Group position="center" grow={isMobile}>
-            <TextInput
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              icon={<Search size={18} />}
-              placeholder="Ürün Adı ile ara..."
-              miw={{ xs: 350, sm: 450, md: 500, lg: 600 }}
-            />
-          </Group>
-        </Container> */}
-      </Paper>
-      <Container>
-        <Box mih="100%" py="md">
-          {isLoading ? (
-            <>
-              <LoadingOverlay visible={true} />
-            </>
-          ) : (
-            <SearchList data={data?.data?.products} />
-          )}
+      {focused && (searchTerm.length < 3 || isLoading) && (
+        <Box py="md">
+          <SearchHistory />
         </Box>
+      )}
+
+      <Container mih="calc(100% - 56px)" py="md" pos="relative">
+        {isLoading ? (
+          <>
+            <LoadingOverlay visible={true} />
+          </>
+        ) : (
+          <SearchList data={data?.data?.products} />
+        )}
       </Container>
     </>
   );

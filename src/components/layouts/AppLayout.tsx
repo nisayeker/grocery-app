@@ -92,10 +92,7 @@ const AppLayout = () => {
       }
       styles={(theme) => ({
         body: {
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[8]
-              : theme.colors.gray[2],
+          backgroundColor: "#fafafa"
         },
         main: {
           paddingTop: "calc(var(--mantine-header-height, 0px) + 0px)",
